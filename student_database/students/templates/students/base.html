@@ -1,0 +1,17 @@
+{% load static %}  <!-- Add this line at the top -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{% block title %}Student Management System{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Welcome to the Student Management System</h1>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>
