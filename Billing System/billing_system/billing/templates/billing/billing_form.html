@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing Page</title>
+</head>
+<body>
+    <h1>Billing Form</h1>
+    
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+        <label for="customer_email">Customer Email:</label>
+        <input type="email" id="customer_email" name="customer_email" required><br><br>
+
+        <h3>Products Purchased</h3>
+        <div id="products">
+            <div class="product">
+                <label for="product_id_1">Product ID:</label>
+                <input type="text" id="product_id_1" name="product_id[]" required>
+                <label for="quantity_1">Quantity:</label>
+                <input type="number" id="quantity_1" name="quantity[]" min="1" required>
+            </div>
+        </div>
+        <button type="button" onclick="addProduct()">Add New Product</button><br><br>
+
+        <h3>Denominations Paid</h3>
+        <label for="denomination_2000">₹2000:</label>
+        <input type="number" id="denomination_2000" name="denomination_2000" value="0" min="0"><br>
+        <label for="denomination_500">₹500:</label>
+        <input type="number" id="denomination_500" name="denomination_500" value="0" min="0"><br>
+        <label for="denomination_200">₹200:</label>
+        <input type="number" id="denomination_200" name="denomination_200" value="0" min="0"><br>
+        <label for="denomination_100">₹100:</label>
+        <input type="number" id="denomination_100" name="denomination_100" value="0" min="0"><br><br>
+
+        <h3>Cash Paid by Customer</h3>
+        <label for="paid_amount">Paid Amount:</label>
+        <input type="number" id="paid_amount" name="paid_amount" min="0" required><br><br>
+
+        <button type="submit">Generate Bill</button>
+        <button type="reset">Cancel</button>
+    </form>
+
+    {% if bill %}
+        <h2>Bill Summary</h2>
+        <p><strong>Customer Email:</strong> {{ bill.customer_email }}</p>
+        <p><strong>Total Amount (Excl. Tax):</strong> ₹{{ bill.total_amount }}</p>
+        <p><strong>Total Tax:</strong> ₹{{ bill.total_tax }}</p>
+        <p><strong>Net Price (Incl. Tax):</strong> ₹{{ bill.net_price }}</p>
+        <p><strong>Paid Amount:</strong> ₹{{ bill.paid_amount }}</p>
+        <p><strong>Change:</strong> ₹{{ bill.change }}</p>
+
+        <h3>Change Denominations:</h3>
+        <ul>
+            {% if bill.change_denominations %}
+                {% for denomination, count in bill.change_denominations.items %}
+                    <li>₹{{ denomination }}: {{ count }} notes</li>
+                {% endfor %}
+            {% else %}
+                <li>No change to be returned.</li>
+            {% endif %}
+        </ul>
+    {% endif %}
+
+    <script>
+        function addProduct() {
+            const productCount = document.querySelectorAll('.product').length + 1;
+            const productsDiv = document.getElementById('products');
+            const newProductDiv = document.createElement('div');
+            newProductDiv.classList.add('product');
+            newProductDiv.innerHTML = `
+                <label for="product_id_${productCount}">Product ID:</label>
+                <input type="text" id="product_id_${productCount}" name="product_id[]" required>
+                <label for="quantity_${productCount}">Quantity:</label>
+                <input type="number" id="quantity_${productCount}" name="quantity[]" min="1" required>
+            `;
+            productsDiv.appendChild(newProductDiv);
+        }
+    </script>
+</body>
+</html>
